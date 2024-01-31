@@ -15,6 +15,7 @@ This line sets up the grid with the number of #x elements= #y elements = #z elem
 `grid h=200 x=30e3 y=30e3 z=10e3 az=0`
 
 Set simulation time
+
 `time t=15.0`
 
 Sets velocity model to be vs=1000 m/s, vp=sqrt(3)*1000 m/s, and rho=1500 kg/m^3
