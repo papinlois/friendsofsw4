@@ -11,3 +11,7 @@ Cancelled by icepocalypse 2024.
 ## Session 3
 
 Starting with the [LLNL/CIG tutorial](https://github.com/UO-Geophysics/friendsofsw4/blob/main/SW4-tutorial-CIG.pdf), we explored the seismic1.in input file and took some [notes](https://github.com/UO-Geophysics/friendsofsw4/blob/main/sw4_notes.md) on what each component meant.
+
+## Session 4
+
+Kate is going to lead this session and put some notes here.  This [script](https://github.com/UO-Geophysics/friendsofsw4/blob/main/elevation_snippet.py) could be useful for automated download of elevation data.
