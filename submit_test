@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH --job-name=sw4_test     ### Job Name
+#SBATCH --partition=compute       ### Quality of Service (like a queue in PBS)
+#SBATCH --time=0-00:30:00     ### Wall clock time limit in Days-HH:MM:SS
+#SBATCH --nodes=1             ### Node count required for the job
+#SBATCH --ntasks-per-node=4   ### Nuber of tasks to be launched per Node
+#SBATCH --mem=20G             ### memory limit per node, in MB
+#SBATCH --account=amt
+
+module load sw4/3.0.0
+mpirun -np 4 sw4 ../examples/llnl-cig-tutorial/Lambs/seismic_perso.in
