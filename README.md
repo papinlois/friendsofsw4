@@ -15,3 +15,11 @@ Starting with the [LLNL/CIG tutorial](https://github.com/UO-Geophysics/friendsof
 ## Session 4
 
 Kate is going to lead this session and put some notes here.  This [script](https://github.com/UO-Geophysics/friendsofsw4/blob/main/elevation_snippet.py) could be useful for automated download of elevation data.
+
+We appended our notes to the existing [notes](https://github.com/UO-Geophysics/friendsofsw4/blob/main/sw4_notes.md). We focused on modifying seismic1.in to look at what different parameters do to the solution and plotted the outputs. We also went through the input files for the next CIG/LLNL example LOH-1 (Layer over halfspace) to understand what each line of code does.
+
+Homework: (1) run either `LOH.1-h100-mr.in` or `LOH.1-h50.in` on Talapas (slurm or OpenOnDemand) (2) Have topography and velocity models downloaded in some capcity (not necessarily formatted for sw4) (3) Compute the grid resolution you need based on your maximum frequency need using Section 4.4 of the user manual
+
+## Session 5
+
+Look into reading and plotting the `.sw4image` files in python to visualize LOH-1 outputs and... 
