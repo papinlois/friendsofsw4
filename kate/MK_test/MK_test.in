@@ -1,0 +1,38 @@
+# SW4 input file
+
+grid x=74e3 y=88e3 z=30e3 lat=19.2 lon=-155.9 az=0 h=1000
+
+topography input=grid file=maunakea.topo zmax=4205. order=3
+
+# attenuation nmech=1
+
+fileio path=mk-results
+
+# the pfile should define the material in all points
+pfile filename=MaunaKea.ppmod
+
+# made up event
+source x=42.48e3 y=65.51e3 z=21.75e3 m0=1e19 strike=45 dip=90 rake=180 type=GaussianInt freq=1.0 t0=6
+
+#time steps=0
+time t=10 
+
+# images
+# topography (requires the topography command to be enabled)
+image mode=topo z=0 cycle=0 file=g
+
+image mode=lat z=0  cycle=0 file=g
+image mode=lon z=0  cycle=0 file=g
+
+image mode=p z=0 cycle=0 file=g
+
+image mode=p y=44e3 cycle=0 file=g
+
+image mode=velmag z=0.0 timeInterval=5 file=g
+image mode=velcurl z=0.0 timeInterval=5 file=g
+
+image mode=hvelmax z=0.0 time=50 file=g
+
+# Time history at a reciever station. Save North, East, Vertical velocity components
+# on the USGS text format
+rec lat=19.7573 lon=-155.5326 depth=0 nsew=1 variables=velocity file=POHA usgsformat=1 sacformat=0
