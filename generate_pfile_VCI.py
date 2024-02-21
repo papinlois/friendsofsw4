@@ -74,7 +74,7 @@ rho_max=np.max(rho)
 vmod.insert(5,'rho',rho)
 
 ## open the textfile from before in append mode
-file=open(filename,'a')
+file=open(filename,'w')
 
 ## Write Header
 file.write(name+'\n'+
