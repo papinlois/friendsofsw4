@@ -138,12 +138,12 @@ file.close()
 Ndepth=len(depths)
 for lat in lats:
     for lon in lons:
-        print(lat, lon, Ndepth)
+        # print(lat, lon, Ndepth)
         tmp=vmod_interp[(vmod_interp['lat']==lat) & (vmod_interp['lon']==lon)]
         tmp.insert(0,'ind',range(1,len(depths)+1))
-        print(tmp[['ind','depth','vp','rho']])
+        #  print(tmp[['ind','depth','vp','vs','rho']])
         # depthprof=lat_subset.loc[np.abs(lat_subset['lon']-lon)<1e-2,['depth', 'vp','vs','rho']]
         file=open(filename,'a')
         file.write(str(lat)+' '+str(lon)+' '+str(Ndepth)+'\n')
         file.close()
-        tmp[['ind','depth','vp','rho']].to_csv(filename, sep=' ', header=False, index=False, mode='a')
+        tmp[['ind','depth','vp','vs','rho']].to_csv(filename, sep=' ', header=False, index=False, mode='a')

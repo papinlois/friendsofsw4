@@ -2,14 +2,14 @@
 
 grid x=74e3 y=88e3 z=30e3 lat=19.2 lon=-155.9 az=0 h=1000
 
-topography input=grid file=maunakea.topo zmax=4205. order=3
+topography input=geographic file=maunakea.topo zmax=4205. order=3
 
 # attenuation nmech=1
 
 fileio path=mk-results
 
 # the pfile should define the material in all points
-pfile filename=MaunaKea.ppmod
+pfile filename=maunakea.ppmod
 
 # made up event
 source x=42.48e3 y=65.51e3 z=21.75e3 m0=1e19 strike=45 dip=90 rake=180 type=GaussianInt freq=1.0 t0=6

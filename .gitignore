@@ -1,2 +1,5 @@
 .ipynb_checkpoints
 
+# Ignore big topo and velocity model files
+*.topo 
+*.ppmod
