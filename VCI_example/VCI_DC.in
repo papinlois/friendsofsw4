@@ -1,37 +1,41 @@
-# SW4 input file
+####################################################
+### SW4 INPUT FILE FOR SOUTHERN VANCOUVER ISLAND ###
+####################################################
+# Run me with mpirun -host localhost -np 8 ../../../optimize/sw4 VCI_DC.in
 
-grid x=50e3 y=50e3 z=50e3 lat=48.0 lon=-124.0 az=0 h=1000
 
-topography input=grid file=VCI.topo zmax=1922. order=3
+# Sets up the grid
+grid x=50000 y=50000 z=50000 lat=48.0 lon=-124.0 az=0 h=100
+
+# For this topo the min elevation is emin=-1477.7705 and max elevtation is emax=2374.0.
+# egrid<=emin-3*(emax-emin).  zmax=-egrid.  From this I get egrid=-13033 and zmax=13033.
+topography input=grid file=svi_topo_03s.topo zmax=13033 order=3
 
 # attenuation nmech=1
+fileio path=vci-results verbose=3
 
-fileio path=vci-results
+## the pfile should define the material in all points
+#pfile filename=VancouverIsland.ppmod smoothingsize=5
 
-# the pfile should define the material in all points
-pfile filename=VancouverIsland.ppmod smoothingsize=5
+# first define the material properties everywhere (half-space)
+block vp=6000 vs=3464 rho=2700 
 
 # made up event
-source x=25e3 y=25e3 z=10e3 m0=1e19 strike=45 dip=90 rake=180 type=GaussianInt freq=1.0 t0=6
+source x=25000 y=25000 z=10000 m0=1e19 strike=45 dip=90 rake=180 type=GaussianInt freq=1.0 t0=6
 
 #time steps=0
-time t=10 
+time t=20 
 
-# images
-# topography (requires the topography command to be enabled)
-image mode=topo z=0 cycle=0 file=g
-
-image mode=lat z=0  cycle=0 file=g
-image mode=lon z=0  cycle=0 file=g
-
-image mode=p z=0 cycle=0 file=g
-
-image mode=p y=50e3 cycle=0 file=g
-
-image mode=velmag z=0.0 timeInterval=5 file=g
-image mode=velcurl z=0.0 timeInterval=5 file=g
-
-image mode=hvelmax z=0.0 time=50 file=g
+## images
+## topography (requires the topography command to be enabled)
+#image mode=topo z=0 cycle=0 file=g
+#image mode=lat z=0  cycle=0 file=g
+#image mode=lon z=0  cycle=0 file=g
+#image mode=p z=0 cycle=0 file=g
+#image mode=p y=50e3 cycle=0 file=g
+#image mode=velmag z=0.0 timeInterval=5 file=g
+#image mode=velcurl z=0.0 timeInterval=5 file=g
+#image mode=hvelmax z=0.0 time=50 file=g
 
 # Time history at a reciever station. Save North, East, Vertical velocity components
 # on the USGS text format
