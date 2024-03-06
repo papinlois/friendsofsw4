@@ -8,6 +8,7 @@ Created on Tue Feb  6 16:47:42 2024
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+
 # Function for computing density
 # empirical 'Nafe–Drake' relationship vp->rho Eqn1.  Brocher 2005 
 # valid from 1500 m/s to 8500 m/s
@@ -26,17 +27,59 @@ def vp2rho(pvel):
     return rho
 
 # Some general setting stuff
-name='MaunaKea'
+name='maunakea'
 suffix='.ppmod'
 filename=name+suffix
 delta=0.25
 
 # Now we read in data and make it one dataframe
-vr=pd.read_csv('out.vr_release', delim_whitespace=True,header=None, names=['lon','lat','depth','vp/vs'])
 vmod=pd.read_csv('out.vp_release', delim_whitespace=True,header=None, names=['lon','lat','depth','vp'])
+vr=pd.read_csv('out.vr_release', delim_whitespace=True,header=None, names=['lon','lat','depth','vp/vs'])
 vs=np.round(vmod['vp']/vr['vp/vs'],2) # compute vs and round 
 vmod.insert(4,'vs',vs)
 
+plt.plot(vmod['lon'],vmod['lat'],'ko')
+
+# this is a chunk that grids the velocity model
+from scipy.interpolate import griddata
+latmin=18.9
+latmax=20.2
+lonmin=-156.0
+lonmax=-155.0
+lats=np.round(np.arange(latmin,latmax,0.025),decimals=3)
+lons=np.round(np.arange(lonmin,lonmax,0.025),decimals=3)
+depths= vmod['depth'].unique()
+grid=np.zeros((len(lats)*len(lons)*len(depths),3))
+ii = 0
+for lon in lons:
+    for lat in lats:
+        for dep in depths:
+            grid[ii,0], grid[ii,1], grid[ii,2]=lon, lat, dep
+            ii+=1
+        
+grid_vp = griddata((vmod['lon'],vmod['lat'],vmod['depth']), vmod['vp'], 
+                    (grid), method='linear')
+grid_vs = griddata((vmod['lon'],vmod['lat'],vmod['depth']), vmod['vs'], 
+                    (grid), method='linear')
+vmod_interp = pd.DataFrame(np.hstack((grid,
+                                      grid_vp.reshape(len(lats)*len(lons)*len(depths),1),
+                                      grid_vs.reshape(len(lats)*len(lons)*len(depths),1))), 
+                           columns=['lon', 'lat', 'depth', 'vp', 'vs'])
+
+
+plt.figure()
+d=3
+dslice=vmod[vmod['depth']==d]
+dslice_interp=vmod_interp[vmod_interp['depth']==d]
+plt.scatter(dslice['lon'],dslice['lat'],20,dslice['vp'],vmin=4,vmax=7)
+plt.scatter(dslice_interp['lon'],dslice_interp['lat'],20,dslice_interp['vp'],edgecolors='black',vmin=4,vmax=7)
+
+# Check for NAN drama
+assert np.isnan(vmod_interp['vp']).sum() == 0 and np.isnan(vmod_interp['vs']).sum() == 0
+
+vmod_interp['rho']=vp2rho(vmod_interp['vp'])
+
+'''
 # # Convert from km/s to m/s only if using cartesian coords
 # vmod['vp']=vmod['vp']*1e3
 # vmod['vs']=vmod['vs']*1e3
@@ -55,8 +98,8 @@ Ndepth=int(len(vmod['depth'].unique()))
 Nlon=int(len(vmod['lon'])/Nlat/Ndepth) 
 
 # Vectors for lat and longitude variations
-lon_vec=np.round(np.linspace(lon_min,lon_max, Nlon),4)
-lat_vec=np.round(np.linspace(lat_min,lat_max, Nlat),4)
+lon_vec=vmod.loc[vmod['depth']==depth_min].loc[vmod['lat']==lat_min]['lon'].to_numpy()
+lat_vec=vmod['lat'].unique()
 depth_vec= vmod['depth'].unique()
 index_vec= np.arange(1, Ndepth+1, dtype=int)
 
@@ -72,32 +115,36 @@ rho_max=np.max(rho)
 
 # add rho to dataframe
 vmod.insert(5,'rho',rho)
-
+'''
 ## open the textfile from before in append mode
-file=open(filename,'a')
+file=open(filename,'w')
 
 ## Write Header
+# f'whatever str {this is a var:.3f}'
 file.write(name+'\n'+
     str(delta)+'\n'+
-    str(Nlat)+' '+str(lat_min)+' '+str(lat_max)+'\n'+
-    str(Nlon)+' '+str(lon_min)+' '+str(lon_max)+'\n'+
-    str(Ndepth)+' '+str(depth_min)+' '+str(depth_max)+'\n'+
+    str(len(lats))+' '+str(np.min(lats))+' '+f"{np.max(lats):.1f}"+'\n'+
+    str(len(lons))+' '+str(np.min(lons))+' '+f"{np.max(lons):.1f}"+'\n'+
+    str(len(depths))+' '+str(np.min(depths))+' '+str(np.max(depths))+'\n'+
     '-99 -99 -99 -99\n'+
     '.FALSE.\n')
+
+
+
 file.close()
 
 ## Write depth profiles
 # note the sorting looks weird because comparing floats in weird sometimes
 
-for lat in lat_vec:
-    lat_subset=vmod.loc[np.abs(vmod['lat']-lat)<1e-3,['lon','depth', 'vp','vs','rho']]
-    for lon in lon_vec:
-        depthprof=lat_subset.loc[np.abs(lat_subset['lon']-lon)<1e-2,['depth', 'vp','vs','rho']]
-        depthprof.insert(0,'ind',index_vec)
+Ndepth=len(depths)
+for lat in lats:
+    for lon in lons:
+        # print(lat, lon, Ndepth)
+        tmp=vmod_interp[(vmod_interp['lat']==lat) & (vmod_interp['lon']==lon)]
+        tmp.insert(0,'ind',range(1,len(depths)+1))
+        #  print(tmp[['ind','depth','vp','vs','rho']])
+        # depthprof=lat_subset.loc[np.abs(lat_subset['lon']-lon)<1e-2,['depth', 'vp','vs','rho']]
         file=open(filename,'a')
         file.write(str(lat)+' '+str(lon)+' '+str(Ndepth)+'\n')
         file.close()
-        depthprof.to_csv(filename, sep=' ', header=False, index=False, mode='a')
-
-
-        
+        tmp[['ind','depth','vp','vs','rho']].to_csv(filename, sep=' ', header=False, index=False, mode='a')
